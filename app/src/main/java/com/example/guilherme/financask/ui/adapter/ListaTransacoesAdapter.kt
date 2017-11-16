@@ -4,25 +4,37 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewParent
 import android.widget.BaseAdapter
 import com.example.guilherme.financask.R
-import java.security.AccessControlContext
+import com.example.guilherme.financask.model.Transacao
+import kotlinx.android.synthetic.main.transacao_item.view.*
+import java.text.SimpleDateFormat
 
 /**
  * Created by guilherme on 15/11/17.
  */
-class ListaTransacoesAdapter(transacoes: List<String>, context: Context) : BaseAdapter() {
+class ListaTransacoesAdapter(transacoes: List<Transacao>, context: Context) : BaseAdapter() {
 
     private val transacoes = transacoes
     private val context = context
 
     override fun getView(posicao: Int, view: View?, parent: ViewGroup?): View {
-        var inflate = LayoutInflater.from(context).inflate(R.layout.transacao_item, parent, false)
-        return inflate
+        val viewCriada = LayoutInflater.from(context).inflate(R.layout.transacao_item, parent, false)
+
+        val transacao = transacoes[posicao]
+
+        viewCriada.transacao_valor.text = transacao.valor.toString()
+        viewCriada.transacao_categoria.text = transacao.categoria
+
+        val formatobr = "dd/MM/yyyy"
+        val format = SimpleDateFormat(formatobr)
+        val dataFormatada = format.format(transacao.data.time)
+        viewCriada.transacao_data.text = dataFormatada
+
+        return viewCriada
     }
 
-    override fun getItem(posicao: Int): String {
+    override fun getItem(posicao: Int): Transacao {
         return transacoes[posicao]
     }
 
