@@ -10,30 +10,42 @@ class Resumo(private val lista: List<Transacao>) {
 
     fun receita() : BigDecimal{
 
-        var totalReceita = BigDecimal.ZERO
+//        var totalReceita = BigDecimal.ZERO
+//        for (transacao in lista) {
+//            if (transacao.tipo == Tipo.RECEITA) {
+//                totalReceita = totalReceita.plus(transacao.valor) // o plus e um intancia para "+" dividir os valores
+//            }
+//        }
+//        val somaDeReceita: Double = somaPor(Tipo.RECEITA)
 
-        for (transacao in lista) {
-            if (transacao.tipo == Tipo.RECEITA) {
-                totalReceita = totalReceita.plus(transacao.valor) // o plus e um intancia para "+" dividir os valores
-            }
-        }
-        return totalReceita
+        return somaPor(Tipo.RECEITA)
     }
 
     fun despesa() :BigDecimal{
 
-        var totalDespesa = BigDecimal.ZERO
+//        var totalDespesa = BigDecimal.ZERO
+//
+//        for (transacao in lista) {
+//            if (transacao.tipo == Tipo.DESPESA) {
+//                totalDespesa = totalDespesa.plus(transacao.valor)
+//            }
+//        }
+//        val somaDeDespasa: Double = somaPor(Tipo.DESPESA)
 
-        for (transacao in lista) {
-            if (transacao.tipo == Tipo.DESPESA) {
-                totalDespesa = totalDespesa.plus(transacao.valor)
-            }
-        }
-        return totalDespesa
+        return somaPor(Tipo.DESPESA)
     }
 
-    fun total() : BigDecimal{
-        return receita().subtract(despesa())
+    private fun somaPor(tipo: Tipo) : BigDecimal{
+        val somDeTransacoes = lista.filter { it.tipo == tipo } // subtituindo o: transacao -> transacao pelo it
+                .sumByDouble { it.valor.toDouble() }
+
+        return BigDecimal(somDeTransacoes)
     }
+
+//    fun total() : BigDecimal{
+//        return receita().subtract(despesa())
+//    }
+
+    val total get() = receita().subtract(despesa())
 
 }
