@@ -5,13 +5,10 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.DatePicker
 import android.widget.Toast
 import com.example.guilherme.financask.R
-import com.example.guilherme.financask.extension.format_br
 import com.example.guilherme.financask.extension.formatadatabr
 import com.example.guilherme.financask.model.Tipo
 import com.example.guilherme.financask.model.Transacao
@@ -19,8 +16,8 @@ import com.example.guilherme.financask.ui.ResumoView
 import com.example.guilherme.financask.ui.adapter.ListaTransacoesAdapter
 import kotlinx.android.synthetic.main.activity_lista_transacoes.*
 import kotlinx.android.synthetic.main.form_transacao.view.*
-import kotlinx.android.synthetic.main.resumo_card.*
 import java.math.BigDecimal
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -29,15 +26,17 @@ import java.util.*
 
 class ListaTransacoesActivity : AppCompatActivity(){
 
+    private val transacoes: MutableList<Transacao> = mutableListOf() // metado MutableList cria um lista mutil valor que pode ser add
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lista_transacoes)
 
-        val lista: List<Transacao> = listDeExemplo()
+//        val lista: List<Transacao> = listDeExemplo()
 
-        configuraResumo(lista)
+        configuraResumo()
 
-        configuraLista(lista)
+        configuraLista()
 
         val view = window.decorView
         val viewCriada = LayoutInflater.from(this).inflate(R.layout.form_transacao, view as ViewGroup, false)
@@ -63,28 +62,62 @@ class ListaTransacoesActivity : AppCompatActivity(){
         lista_transacoes_adiciona_receita.setOnClickListener {
 //            Toast.makeText(this, "Clique de receita", Toast.LENGTH_LONG).show() enviando mensagem texto no android
               AlertDialog.Builder(this).setTitle(R.string.adiciona_receita)
-                      .setView(viewCriada).setPositiveButton("Adicionar", null)
-                       // O metado setPositiveButton cria um botão para confimar um acão do usuario
-                      .setNegativeButton("Cancelar", null).show() // O metado setNegativeButton cancelar a ação do usuario
+
+                      .setView(viewCriada).setPositiveButton("Adicionar", { dialogInterface, i ->
+                               // O metado setPositiveButton cria um botão para confimar um acão do usuario
+                              val valorEmTexto = viewCriada.form_transacao_valor.text.toString()
+                              val dataEmTexto = viewCriada.form_transacao_data.text.toString()
+                              val categoriaEmTexto = viewCriada.form_transacao_categoria.selectedItem.toString()
+
+                              val valor = try{
+                                  BigDecimal(valorEmTexto)
+                              }catch (exception: NumberFormatException){
+                                  Toast.makeText(this,"Falha na converção de valor", Toast.LENGTH_LONG).show()
+                                  BigDecimal.ZERO
+                              }
+
+                              val formato_br = SimpleDateFormat("dd/MM/yyyy")
+                              val dataConvert: Date = formato_br.parse(dataEmTexto)
+                              val data = Calendar.getInstance()
+                              data.time = dataConvert
+
+                              val transacaoCriada = Transacao(tipo = Tipo.RECEITA, valor = valor,
+                                      data = data, categoria = categoriaEmTexto)
+
+                              atualizaTransacoes(transacaoCriada)
+                              lista_transacoes_adiciona_menu.close(true)
+
+//                              Toast.makeText(this, "${transacaoCriada.valor} - " +
+//                                            "${transacaoCriada.categoria} - " +
+//                                            "${transacaoCriada.data.formatadatabr()} - " +
+//                                            "${transacaoCriada.tipo}", Toast.LENGTH_LONG).show()
+
+                      }).setNegativeButton("Cancelar", null).show() // O metado setNegativeButton cancelar a ação do usuario
         }
 
     }
 
-    private fun configuraResumo(lista: List<Transacao>) {
+    private fun atualizaTransacoes(transacao: Transacao) {
+        transacoes.add(transacao)
+        configuraLista()
+        configuraResumo()
+    }
+
+    private fun configuraResumo() {
         val view = window.decorView
-        val resumoView = ResumoView(this, view, lista)
+        val resumoView = ResumoView(this, view, transacoes)
         resumoView.atualiza()
     }
 
-    private fun configuraLista(lista: List<Transacao>){
-        lista_transacoes_listview.adapter = ListaTransacoesAdapter(lista, this)
+    private fun configuraLista(){
+        lista_transacoes_listview.adapter = ListaTransacoesAdapter(transacoes, this)
     }
 
-    private fun listDeExemplo(): List<Transacao> {
-        return listOf(Transacao(valor = BigDecimal(420.5), data = Calendar.getInstance(),
-                categoria = "almoço de final semana", tipo = Tipo.DESPESA),
-                Transacao(valor = BigDecimal(100.0), tipo = Tipo.RECEITA, categoria = "Economia"),
-                Transacao(valor = BigDecimal(200.0), tipo = Tipo.RECEITA, categoria = "Economia"))
-    }
+//    private fun listDeExemplo(): List<Transacao> {   // como criar um campo na linha de codigo
+//        return listOf(Transacao(valor = BigDecimal(420.5), data = Calendar.getInstance(),
+//                categoria = "almoço de final semana", tipo = Tipo.DESPESA),
+//                Transacao(valor = BigDecimal(100.0), tipo = Tipo.RECEITA, categoria = "Economia"),
+//                Transacao(valor = BigDecimal(200.0), tipo = Tipo.RECEITA, categoria = "Economia"))
+//    }
 
 }
