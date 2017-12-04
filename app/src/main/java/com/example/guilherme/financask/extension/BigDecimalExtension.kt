@@ -12,5 +12,6 @@ fun BigDecimal.format_br() : String{
 
     val formato_br = DecimalFormat.getCurrencyInstance(Locale("pt", "br"))
     return formato_br.format(this)
-            .replace("R$", "R$ ").replace("-R$","R$ -")  // replace formata valor
+            .replace("R$", "R$ ")
+            .replace("-R$","R$ -").replace("R$ - ","R$ -")    // replace formata valor
 }

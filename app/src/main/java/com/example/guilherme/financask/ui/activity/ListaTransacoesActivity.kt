@@ -1,26 +1,16 @@
 package com.example.guilherme.financask.ui.activity
 
-import android.app.AlertDialog
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Toast
 import com.example.guilherme.financask.R
 import com.example.guilherme.financask.delegate.TransacaoDelegate
-import com.example.guilherme.financask.extension.formatadatabr
 import com.example.guilherme.financask.model.Tipo
 import com.example.guilherme.financask.model.Transacao
 import com.example.guilherme.financask.ui.ResumoView
 import com.example.guilherme.financask.ui.adapter.ListaTransacoesAdapter
 import com.example.guilherme.financask.ui.dialog.add_TransacaoDialog
 import kotlinx.android.synthetic.main.activity_lista_transacoes.*
-import kotlinx.android.synthetic.main.form_transacao.view.*
-import java.math.BigDecimal
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * Created by guilherme on 14/11/17.
@@ -40,15 +30,26 @@ class ListaTransacoesActivity : AppCompatActivity(){
 
         configuraLista()
 
+        configuraFab()
+    }
+
+    private fun configuraFab() {
         lista_transacoes_adiciona_receita.setOnClickListener {
-            add_TransacaoDialog(window.decorView as ViewGroup, this).configuraDialog(object : TransacaoDelegate {
-                override fun delegate(transacao: Transacao) {
-                    atualizaTransacoes(transacao)
-                    lista_transacoes_adiciona_menu.close(true)
-                }
-            })
+            chamaDialog(Tipo.RECEITA)
         }
 
+        lista_transacoes_adiciona_despesa.setOnClickListener {
+            chamaDialog(Tipo.DESPESA)
+        }
+    }
+
+    private fun chamaDialog(tipo: Tipo) {
+        add_TransacaoDialog(window.decorView as ViewGroup, this).configuraDialog(tipo, object : TransacaoDelegate {
+            override fun delegate(transacao: Transacao) {
+                atualizaTransacoes(transacao)
+                lista_transacoes_adiciona_menu.close(true)
+            }
+        })
     }
 
 
