@@ -45,7 +45,7 @@ class ResumoView(context: Context, private val view: View?, lista: List<Transaca
     private fun add_Despesa() {
         val totalDespesa = resumo.despesa()
 
-        view?.let {    // only safe e função do kotlin para não enviar um null para campo
+        view?.let {    // only safe e função do kotlin para não enviar um null
             with(it.resumo_card_despesa) {
                 setTextColor(corDespesa)
                 text = totalDespesa.format_br()
