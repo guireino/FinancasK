@@ -10,6 +10,7 @@ import com.example.guilherme.financask.model.Transacao
 import com.example.guilherme.financask.ui.ResumoView
 import com.example.guilherme.financask.ui.adapter.ListaTransacoesAdapter
 import com.example.guilherme.financask.ui.dialog.add_TransacaoDialog
+import com.example.guilherme.financask.ui.dialog.alteraTransacaoDialog
 import kotlinx.android.synthetic.main.activity_lista_transacoes.*
 
 /**
@@ -27,9 +28,7 @@ class ListaTransacoesActivity : AppCompatActivity(){
 //        val lista: List<Transacao> = listDeExemplo()
 
         configuraResumo()
-
         configuraLista()
-
         configuraFab()
     }
 
@@ -46,15 +45,14 @@ class ListaTransacoesActivity : AppCompatActivity(){
     private fun chamaDialog(tipo: Tipo) {
         add_TransacaoDialog(window.decorView as ViewGroup, this).configuraDialog(tipo, object : TransacaoDelegate {
             override fun delegate(transacao: Transacao) {
-                atualizaTransacoes(transacao)
+                transacoes.add(transacao)
+                atualizaTransacoes()
                 lista_transacoes_adiciona_menu.close(true)
             }
         })
     }
 
-
-    private fun atualizaTransacoes(transacao: Transacao) {
-        transacoes.add(transacao)
+    private fun atualizaTransacoes() {
         configuraLista()
         configuraResumo()
     }
@@ -67,6 +65,16 @@ class ListaTransacoesActivity : AppCompatActivity(){
 
     private fun configuraLista(){
         lista_transacoes_listview.adapter = ListaTransacoesAdapter(transacoes, this)
+        lista_transacoes_listview.setOnItemClickListener { parent, view, posicao, id ->
+            val transacao = transacoes[posicao]
+            alteraTransacaoDialog(window.decorView as ViewGroup, this).configuraDialog(transacao,
+               object: TransacaoDelegate{
+                        override fun delegate(transacao: Transacao) {
+                            transacoes[posicao] = transacao  // criando metado para altera lista
+                            atualizaTransacoes()
+                    }
+               })
+        }
     }
 
 //    private fun listDeExemplo(): List<Transacao> {   // como criar um campo na linha de codigo
