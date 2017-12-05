@@ -2,6 +2,7 @@ package com.example.guilherme.financask.ui.activity
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.view.ViewGroup
 import com.example.guilherme.financask.R
 import com.example.guilherme.financask.delegate.TransacaoDelegate
@@ -20,10 +21,13 @@ import kotlinx.android.synthetic.main.activity_lista_transacoes.*
 class ListaTransacoesActivity : AppCompatActivity(){
 
     private val transacoes: MutableList<Transacao> = mutableListOf() // metado MutableList cria um lista mutil valor que pode ser add
+    private var viewActivity: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lista_transacoes)
+
+        viewActivity = window.decorView
 
 //        val lista: List<Transacao> = listDeExemplo()
 
@@ -43,13 +47,17 @@ class ListaTransacoesActivity : AppCompatActivity(){
     }
 
     private fun chamaDialog(tipo: Tipo) {
-        add_TransacaoDialog(window.decorView as ViewGroup, this).configuraDialog(tipo, object : TransacaoDelegate {
+        add_TransacaoDialog(viewActivity as ViewGroup, this).configuraDialog(tipo, object : TransacaoDelegate {
             override fun delegate(transacao: Transacao) {
-                transacoes.add(transacao)
-                atualizaTransacoes()
+                add(transacao)
                 lista_transacoes_adiciona_menu.close(true)
             }
         })
+    }
+
+    private fun add(transacao: Transacao) {
+        transacoes.add(transacao)
+        atualizaTransacoes()
     }
 
     private fun atualizaTransacoes() {
@@ -58,23 +66,34 @@ class ListaTransacoesActivity : AppCompatActivity(){
     }
 
     private fun configuraResumo() {
-        val view = window.decorView
-        val resumoView = ResumoView(this, view, transacoes)
+//        val view = viewActivity
+        val resumoView = ResumoView(this, viewActivity, transacoes)
         resumoView.atualiza()
     }
 
     private fun configuraLista(){
-        lista_transacoes_listview.adapter = ListaTransacoesAdapter(transacoes, this)
-        lista_transacoes_listview.setOnItemClickListener { parent, view, posicao, id ->
-            val transacao = transacoes[posicao]
-            alteraTransacaoDialog(window.decorView as ViewGroup, this).configuraDialog(transacao,
-               object: TransacaoDelegate{
-                        override fun delegate(transacao: Transacao) {
-                            transacoes[posicao] = transacao  // criando metado para altera lista
-                            atualizaTransacoes()
-                    }
-               })
+        val transacoesAdapter = ListaTransacoesAdapter(transacoes, this)
+        with(lista_transacoes_listview){
+            adapter = transacoesAdapter
+            lista_transacoes_listview.setOnItemClickListener{ parent, view, posicao, id ->
+                val transacao = transacoes[posicao]
+                dialogAlteracao(transacao, posicao)
+            }
         }
+    }
+
+    private fun dialogAlteracao(transacao: Transacao, posicao: Int) {
+        alteraTransacaoDialog(viewActivity as ViewGroup, this).configuraDialog(transacao,
+                object : TransacaoDelegate {
+                    override fun delegate(transacao: Transacao) {
+                        altera(transacao, posicao)
+                    }
+                })
+    }
+
+    private fun altera(transacao: Transacao, posicao: Int) {
+        transacoes[posicao] = transacao  // criando metado para altera lista
+        atualizaTransacoes()
     }
 
 //    private fun listDeExemplo(): List<Transacao> {   // como criar um campo na linha de codigo

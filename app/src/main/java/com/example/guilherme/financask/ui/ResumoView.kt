@@ -15,7 +15,7 @@ import java.math.BigDecimal
 /**
  * Created by guilherme on 27/11/17.
  */
-class ResumoView(private val context: Context, private val view: View, lista: List<Transacao>) {
+class ResumoView(context: Context, private val view: View?, lista: List<Transacao>) {
 
     private val resumo: Resumo = Resumo(lista)
 
@@ -30,10 +30,14 @@ class ResumoView(private val context: Context, private val view: View, lista: Li
 
     private fun add_Receita() {
         val totalReceita = resumo.receita()
-        with(view.resumo_card_receita){
-            setTextColor(corReceita)
-            text = totalReceita.format_br()
+
+        if (view != null){
+            with(view.resumo_card_receita){
+                setTextColor(corReceita)
+                text = totalReceita.format_br()
+            }
         }
+
 //        view.resumo_card_receita.setTextColor(corReceita)
 //        view.resumo_card_receita.text = totalReceita.format_br()
     }
@@ -41,9 +45,11 @@ class ResumoView(private val context: Context, private val view: View, lista: Li
     private fun add_Despesa() {
         val totalDespesa = resumo.despesa()
 
-        with(view.resumo_card_despesa){
-            setTextColor(corDespesa)
-            text = totalDespesa.format_br()
+        view?.let {    // only safe e função do kotlin para não enviar um null para campo
+            with(it.resumo_card_despesa) {
+                setTextColor(corDespesa)
+                text = totalDespesa.format_br()
+            }
         }
 //        view.resumo_card_despesa.setTextColor(corDespesa)
 //        view.resumo_card_despesa.text = totalDespesa.format_br()
@@ -52,9 +58,11 @@ class ResumoView(private val context: Context, private val view: View, lista: Li
     private fun add_total(){
         val total = resumo.total
         val cor = corPor(total)
-        with(view.resumo_card_total){
-            setTextColor(cor)
-            text = total.format_br()
+        view?.let {
+            with(view.resumo_card_total){
+                setTextColor(cor)
+                text = total.format_br()
+            }
         }
     }
 
