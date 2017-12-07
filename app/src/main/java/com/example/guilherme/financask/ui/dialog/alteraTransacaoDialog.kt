@@ -1,22 +1,11 @@
 package com.example.guilherme.financask.ui.dialog
 
-import android.app.AlertDialog
-import android.app.DatePickerDialog
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Toast
 import com.example.guilherme.financask.R
-import com.example.guilherme.financask.delegate.TransacaoDelegate
-import com.example.guilherme.financask.extension.convertCalendar
 import com.example.guilherme.financask.extension.formatadatabr
 import com.example.guilherme.financask.model.Tipo
 import com.example.guilherme.financask.model.Transacao
-import kotlinx.android.synthetic.main.form_transacao.view.*
-import java.math.BigDecimal
-import java.util.*
 
 /**
  * Created by guilherme on 01/12/17.
@@ -35,11 +24,11 @@ class alteraTransacaoDialog(viewGroup: ViewGroup,
         }
     }
 
-    fun configuraDialog(transacao: Transacao, transacaoDelegate: TransacaoDelegate) {
+    fun configuraDialog(transacao: Transacao, delegate: (transacao: Transacao) -> Unit) {
 
         val tipo = transacao.tipo
 
-        super.configuraDialog(tipo, transacaoDelegate)
+        super.chamaDialog(tipo, delegate)
         inicializaCampos(transacao)
     }
 

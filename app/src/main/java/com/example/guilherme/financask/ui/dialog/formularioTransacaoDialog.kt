@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.example.guilherme.financask.R
-import com.example.guilherme.financask.delegate.TransacaoDelegate
 import com.example.guilherme.financask.extension.convertCalendar
 import com.example.guilherme.financask.extension.formatadatabr
 import com.example.guilherme.financask.model.Tipo
@@ -29,16 +28,16 @@ abstract class formularioTransacaoDialog(private val context: Context, private v
     protected val campoData = viewCriada.form_transacao_data
     abstract protected val tituloBotaoPositivo: String
 
-    fun configuraDialog(tipo: Tipo, transacaoDelegate: TransacaoDelegate) {
+    fun chamaDialog(tipo: Tipo, delegate: (transacao: Transacao) -> Unit) {
 
         configuraData()
         configuraCategoria(tipo)
 
         //            Toast.makeText(this, "Clique de receita", Toast.LENGTH_LONG).show() enviando mensagem texto no android
-        configuraFormulario(tipo, transacaoDelegate) // O metado setNegativeButton cancelar a ação do usuario
+        configuraFormulario(tipo, delegate) // O metado setNegativeButton cancelar a ação do usuario
     }
 
-    private fun configuraFormulario(tipo: Tipo, transacaoDelegate: TransacaoDelegate) {
+    private fun configuraFormulario(tipo: Tipo, delegate: (transacao: Transacao) -> Unit) {
 
         val titulo = tituloPor(tipo)
 
@@ -58,7 +57,7 @@ abstract class formularioTransacaoDialog(private val context: Context, private v
             val transacaoCriada = Transacao(tipo = tipo, valor = valor,
                     data = data, categoria = categoriaEmTexto)
 
-            transacaoDelegate.delegate(transacaoCriada)
+            delegate(transacaoCriada)
 
 //            atualizaTransacoes(transacaoCriada)
 //            lista_transacoes_adiciona_menu.close(true)
