@@ -2,7 +2,11 @@ package com.example.guilherme.financask.ui.activity
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.Toast
 import com.example.guilherme.financask.R
 import com.example.guilherme.financask.model.Tipo
 import com.example.guilherme.financask.model.Transacao
@@ -84,7 +88,26 @@ class ListaTransacoesActivity : AppCompatActivity(){
                 val transacao = transacoes[posicao]
                 dialogAlteracao(transacao, posicao)
             }
+
+            setOnCreateContextMenuListener{ menu, view, menuInfo ->
+                menu.add(Menu.NONE, 1, Menu.NONE, "Remover")
+            }
         }
+    }
+
+    override fun onContextItemSelected(item: MenuItem?): Boolean {    // criando ação para remover o campo
+        val idMenu = item?.itemId
+        if (idMenu == 1){
+            val contextMenuInfo = item.menuInfo as AdapterView.AdapterContextMenuInfo
+            val posicaoTransacao = contextMenuInfo.position
+            remove(posicaoTransacao)
+        }
+        return super.onContextItemSelected(item)
+    }
+
+    private fun remove(posicao: Int) {
+        transacoes.removeAt(posicao)
+        atualizaTransacoes()
     }
 
     private fun dialogAlteracao(transacao: Transacao, posicao: Int) {
