@@ -6,8 +6,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.Toast
 import com.example.guilherme.financask.R
+import com.example.guilherme.financask.dao.TransacaoDAO
 import com.example.guilherme.financask.model.Tipo
 import com.example.guilherme.financask.model.Transacao
 import com.example.guilherme.financask.ui.ResumoView
@@ -22,7 +22,8 @@ import kotlinx.android.synthetic.main.activity_lista_transacoes.*
 
 class ListaTransacoesActivity : AppCompatActivity(){
 
-    private val transacoes: MutableList<Transacao> = mutableListOf() // metado MutableList cria um lista mutil valor que pode ser add
+    private val dao = TransacaoDAO()
+    private val transacoes = dao.transacoes
     // private lateinit var viewActivity: View --> metado lateinit faz que variaveu inicializa ne algum momento que o aplicativo quiser
 
     private val viewActivity by lazy { // A instancia lazy faz certo momento o codigo a variaveu seja iniciada
@@ -65,7 +66,7 @@ class ListaTransacoesActivity : AppCompatActivity(){
     }
 
     private fun add(transacao: Transacao) {
-        transacoes.add(transacao)
+        dao.add(transacao)
         atualizaTransacoes()
     }
 
@@ -106,7 +107,7 @@ class ListaTransacoesActivity : AppCompatActivity(){
     }
 
     private fun remove(posicao: Int) {
-        transacoes.removeAt(posicao)
+        dao.remove(posicao)
         atualizaTransacoes()
     }
 
@@ -117,7 +118,7 @@ class ListaTransacoesActivity : AppCompatActivity(){
     }
 
     private fun altera(transacao: Transacao, posicao: Int) {
-        transacoes[posicao] = transacao  // criando metado para altera lista
+        dao.altera(transacao, posicao)  // criando metado para altera lista
         atualizaTransacoes()
     }
 
